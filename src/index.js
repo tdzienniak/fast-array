@@ -14,44 +14,65 @@ function alloc(size, fillValue) {
 
 var fastArrayPrototype = {
     extend: function (extensionSize) {
-        var arr = this.arr
         var oldLength = this.maxLength
-        var fillValue = this.fillValue
 
-        arr.length = oldLength + extensionSize
+        this.arr.length = oldLength + extensionSize
 
-        for (var i = oldLength, newLength = this.maxLength = arr.length; i < newLength; i++) {
-            arr[i] = fillValue
+        for (var i = oldLength, newLength = this.maxLength = this.arr.length; i < newLength; i++) {
+            this.arr[i] = this.fillValue
         }
 
-        return this;
+        return this
     },
     removeAtIndex: function (index) {
-        var arr = this.arr
-        var currentLength = this.currentLength
-
-        if (currentLength === 0) {
+        if (this.currentLength === 0) {
             return
         }
 
-        while (index < currentLength - 1) {
-            arr[index] = arr[++index]
-        }
+        var removedValue = this.arr[index]
 
-        this.currentLength = --currentLength
+        this.currentLength--
+
+        while (index < this.currentLength) {
+            this.arr[index] = this.arr[++index]
+        }
 
         if (this.refillRemoved) {
-            arr[currentLength - 1] = this.fillValue
+            this.arr[this.currentLength - 1] = this.fillValue
         }
 
-        return this;
+        return removedValue
+    },
+    unsetAtIndex: function (index) {
+        var unsetValue = this.arr[index]
+
+        this.arr[index] = this.fillValue
+
+        this.sparse = true;
+
+        return unsetValue
+    },
+    findAndRemove: function (value) {
+        var index = this.indexOf(value)
+
+        if (index !== -1) {
+            this.removeAtIndex(index)
+        }
+
+        return index
+    },
+    findAndUnset: function (value) {
+        var index = this.indexOf(value)
+
+        if (index !== -1) {
+            this.unsetAtIndex(index)
+        }
+
+        return index
     },
     indexOf: function (value) {
-        var arr = this.arr
-        var currentLength = this.currentLength
-
-        for (var i = 0; i < currentLength; i++) {
-            if (arr[i] === value) {
+        for (var i = 0; i < this.currentLength; i++) {
+            if (this.arr[i] === value) {
                 return i
             }
         }
@@ -59,15 +80,11 @@ var fastArrayPrototype = {
         return -1;
     },
     clear: function () {
-        var arr = this.arr
-        var currentLength = this.currentLength
-        var fillValue = this.fillValue
-
-        for (var i = 0; i < currentLength; i++) {
-            arr[i] = fillValue
+        for (var i = 0; i < this.currentLength; i++) {
+            this.arr[i] = this.fillValue
         }
 
-        return this;
+        return this
     },
     push: function (value) {
         if (this.currentLength === this.maxLength) {
@@ -76,7 +93,27 @@ var fastArrayPrototype = {
 
         this.arr[this.currentLength++] = value
 
-        return this;
+        return this
+    },
+    pop: function () {
+        return this.arr[--this.currentLength]
+    },
+    compact: function () {
+        if (!this.sparse) {
+            return this
+        }
+
+        var gapLength = 0
+
+        for (var i = 0; i < this.currentLength; i++) {
+            if (this.arr[i] === this.fillValue) {
+                gapLength++
+            } else if (gapLength > 0) {
+                this.arr[i - gapLength] = this[i]
+            }
+        }
+
+        this.sparse = false
     }
 };
 
@@ -90,6 +127,7 @@ function FastArray(opts) {
         extensionFactor: 1.5
     });
 
+    fa.sparse = false;
     fa.arr = alloc(fa.initialSize)
     fa.currentLength = 0;
     fa.maxLength = fa.initialSize;
