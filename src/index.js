@@ -1,138 +1,139 @@
-var defaults = require('lodash.defaults')
+const alloc = (size, fillValue) => {
+  const arr = new Array(size);
 
-function alloc(size, fillValue) {
-    fillValue = fillValue !== void 0 ? fillValue : 0
+  for (let i = 0; i < size; i++) {
+    arr[i] = fillValue;
+  }
 
-    var arr = new Array(size)
-
-    for (var i = 0; i < size; i++) {
-        arr[i] = 0
-    }
-
-    return arr
-}
-
-var fastArrayPrototype = {
-    extend: function (extensionSize) {
-        var oldLength = this.maxLength
-
-        this.arr.length = oldLength + extensionSize
-
-        for (var i = oldLength, newLength = this.maxLength = this.arr.length; i < newLength; i++) {
-            this.arr[i] = this.fillValue
-        }
-
-        return this
-    },
-    removeAtIndex: function (index) {
-        if (this.currentLength === 0) {
-            return
-        }
-
-        var removedValue = this.arr[index]
-
-        this.currentLength--
-
-        while (index < this.currentLength) {
-            this.arr[index] = this.arr[++index]
-        }
-
-        if (this.refillRemoved) {
-            this.arr[this.currentLength - 1] = this.fillValue
-        }
-
-        return removedValue
-    },
-    unsetAtIndex: function (index) {
-        var unsetValue = this.arr[index]
-
-        this.arr[index] = this.fillValue
-
-        this.sparse = true;
-
-        return unsetValue
-    },
-    findAndRemove: function (value) {
-        var index = this.indexOf(value)
-
-        if (index !== -1) {
-            this.removeAtIndex(index)
-        }
-
-        return index
-    },
-    findAndUnset: function (value) {
-        var index = this.indexOf(value)
-
-        if (index !== -1) {
-            this.unsetAtIndex(index)
-        }
-
-        return index
-    },
-    indexOf: function (value) {
-        for (var i = 0; i < this.currentLength; i++) {
-            if (this.arr[i] === value) {
-                return i
-            }
-        }
-
-        return -1;
-    },
-    clear: function () {
-        for (var i = 0; i < this.currentLength; i++) {
-            this.arr[i] = this.fillValue
-        }
-
-        return this
-    },
-    push: function (value) {
-        if (this.currentLength === this.maxLength) {
-            this.extend(Math.round(this.maxLength * this.extensionFactor))
-        }
-
-        this.arr[this.currentLength++] = value
-
-        return this
-    },
-    pop: function () {
-        return this.arr[--this.currentLength]
-    },
-    compact: function () {
-        if (!this.sparse) {
-            return this
-        }
-
-        var gapLength = 0
-
-        for (var i = 0; i < this.currentLength; i++) {
-            if (this.arr[i] === this.fillValue) {
-                gapLength++
-            } else if (gapLength > 0) {
-                this.arr[i - gapLength] = this[i]
-            }
-        }
-
-        this.sparse = false
-    }
+  return arr;
 };
 
-function FastArray(opts) {
-    var fa = Object.create(fastArrayPrototype)
+const fastArrayPrototype = {
+  extend(extensionSize) {
+    const oldLength = this.maxLength;
 
-    defaults(fa, opts, {
-        fillValue: 0,
-        initialSize: 1000,
-        refillRemoved: true,
-        extensionFactor: 1.5
-    });
+    this.arr.length = oldLength + extensionSize;
 
-    fa.sparse = false;
-    fa.arr = alloc(fa.initialSize)
-    fa.currentLength = 0;
-    fa.maxLength = fa.initialSize;
+    for (let i = oldLength, newLength = this.maxLength = this.arr.length; i < newLength; i++) {
+      this.arr[i] = this.fillValue;
+    }
 
-    return fa;
-}
+    return this;
+  },
+  removeAtIndex(index) {
+    if (index < 0 || index >= this.currentLength) {
+      throw new Error('index is out of array bounds');
+    }
 
-module.exports = FastArray;
+    const removedValue = this.arr[index];
+
+    this.currentLength--;
+
+    let i = index;
+    while (i < this.currentLength) {
+      this.arr[i] = this.arr[++i];
+    }
+
+    if (this.refillRemoved) {
+      this.arr[this.currentLength - 1] = this.fillValue;
+    }
+
+    return removedValue;
+  },
+  unsetAtIndex(index) {
+    if (index < 0 || index >= this.currentLength) {
+      throw new Error('index is out of array bounds');
+    }
+
+    const unsetValue = this.arr[index];
+
+    this.arr[index] = this.fillValue;
+
+    this.sparse = true;
+
+    return unsetValue;
+  },
+  findAndRemove(value) {
+    const index = this.indexOf(value);
+
+    if (index !== -1) {
+      this.removeAtIndex(index);
+    }
+
+    return index;
+  },
+  findAndUnset(value) {
+    const index = this.indexOf(value);
+
+    if (index !== -1) {
+      this.unsetAtIndex(index);
+    }
+
+    return index;
+  },
+  indexOf(value) {
+    for (let i = 0; i < this.currentLength; i++) {
+      if (this.arr[i] === value) {
+        return i;
+      }
+    }
+
+    return -1;
+  },
+  clear() {
+    for (let i = 0; i < this.currentLength; i++) {
+      this.arr[i] = this.fillValue;
+    }
+
+    return this;
+  },
+  push(value) {
+    if (this.currentLength === this.maxLength) {
+      this.extend(Math.round(this.maxLength * this.extensionFactor));
+    }
+
+    this.arr[this.currentLength++] = value;
+
+    return this;
+  },
+  pop() {
+    return this.arr[--this.currentLength];
+  },
+  compact() {
+    if (this.sparse) {
+      let gapLength = 0;
+
+      for (let i = 0; i < this.currentLength; i++) {
+        if (this.arr[i] === this.fillValue) {
+          gapLength++;
+        } else if (gapLength > 0) {
+          this.arr[i - gapLength] = this[i];
+        }
+      }
+
+      this.sparse = false;
+    }
+
+    return this;
+  },
+};
+
+export const FastArray = ({
+  fillValue = 0,
+  initialSize = 1000,
+  refillRemoved = true,
+  extensionFactor = 1.5,
+} = {}) => {
+  const fa = Object.create(fastArrayPrototype);
+
+  fa.fillValue = fillValue;
+  fa.initialSize = initialSize;
+  fa.refillRemoved = refillRemoved;
+  fa.extensionFactor = extensionFactor;
+  fa.sparse = false;
+  fa.arr = alloc(initialSize, fillValue);
+  fa.currentLength = 0;
+  fa.maxLength = initialSize;
+
+  return fa;
+};
