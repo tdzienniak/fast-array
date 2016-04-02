@@ -27,16 +27,12 @@ const fastArrayPrototype = {
 
     const removedValue = this.arr[index];
 
-    this.currentLength--;
-
     let i = index;
     while (i < this.currentLength) {
       this.arr[i] = this.arr[++i];
     }
 
-    if (this.refillRemoved) {
-      this.arr[this.currentLength - 1] = this.fillValue;
-    }
+    this.currentLength--;
 
     return removedValue;
   },
@@ -88,6 +84,10 @@ const fastArrayPrototype = {
     return this;
   },
   push(value) {
+    if (value === this.fillValue) {
+      throw new Error('cannot push value equal to `fillValue`');
+    }
+
     if (this.currentLength === this.maxLength) {
       this.extend(Math.round(this.maxLength * this.extensionFactor));
     }
@@ -97,7 +97,15 @@ const fastArrayPrototype = {
     return this;
   },
   pop() {
-    return this.arr[--this.currentLength];
+    if (this.currentLength === 0) {
+      return undefined;
+    }
+
+    const popped = this.arr[--this.currentLength];
+
+    this.arr[this.currentLength] = this.fillValue;
+
+    return popped;
   },
   compact() {
     if (this.sparse) {
@@ -107,10 +115,13 @@ const fastArrayPrototype = {
         if (this.arr[i] === this.fillValue) {
           gapLength++;
         } else if (gapLength > 0) {
-          this.arr[i - gapLength] = this[i];
+          this.arr[i - gapLength] = this.arr[i];
+
+          this.arr[i] = this.fillValue;
         }
       }
 
+      this.currentLength -= gapLength;
       this.sparse = false;
     }
 
