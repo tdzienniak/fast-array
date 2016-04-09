@@ -113,4 +113,21 @@ test('compact', t => {
   t.equal(fa.currentLength, 4, 'currentLength should be changed accordingly');
 
   t.end();
-})
+});
+
+test('indexOf', t => {
+  const fa = FastArray({
+    initialSize: 10,
+  });
+
+  fa.push(1);
+  fa.push(2);
+  fa.push(3);
+  fa.push(3);
+
+  t.equal(fa.indexOf(4), -1, 'should not find value');
+  t.equal(fa.indexOf(2), 1, 'should find value');
+  t.equal(fa.indexOf(3), 2, 'should find first occurance of value');
+
+  t.end();
+});

@@ -96,6 +96,9 @@ const fastArrayPrototype = {
 
     return this;
   },
+  shift() {
+    return this.removeAtIndex(0);
+  },
   pop() {
     if (this.currentLength === 0) {
       return undefined;
