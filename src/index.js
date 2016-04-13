@@ -21,23 +21,23 @@ const fastArrayPrototype = {
     return this;
   },
   removeAtIndex(index) {
-    if (index < 0 || index >= this.currentLength) {
+    if (index < 0 || index >= this.length) {
       throw new Error('index is out of array bounds');
     }
 
     const removedValue = this.arr[index];
 
     let i = index;
-    while (i < this.currentLength) {
+    while (i < this.length) {
       this.arr[i] = this.arr[++i];
     }
 
-    this.currentLength--;
+    this.length--;
 
     return removedValue;
   },
   unsetAtIndex(index) {
-    if (index < 0 || index >= this.currentLength) {
+    if (index < 0 || index >= this.length) {
       throw new Error('index is out of array bounds');
     }
 
@@ -68,7 +68,7 @@ const fastArrayPrototype = {
     return index;
   },
   indexOf(value) {
-    for (let i = 0; i < this.currentLength; i++) {
+    for (let i = 0; i < this.length; i++) {
       if (this.arr[i] === value) {
         return i;
       }
@@ -77,7 +77,7 @@ const fastArrayPrototype = {
     return -1;
   },
   clear() {
-    for (let i = 0; i < this.currentLength; i++) {
+    for (let i = 0; i < this.length; i++) {
       this.arr[i] = this.fillValue;
     }
 
@@ -88,11 +88,11 @@ const fastArrayPrototype = {
       throw new Error('cannot push value equal to `fillValue`');
     }
 
-    if (this.currentLength === this.maxLength) {
+    if (this.length === this.maxLength) {
       this.extend(Math.round(this.maxLength * this.extensionFactor));
     }
 
-    this.arr[this.currentLength++] = value;
+    this.arr[this.length++] = value;
 
     return this;
   },
@@ -100,13 +100,13 @@ const fastArrayPrototype = {
     return this.removeAtIndex(0);
   },
   pop() {
-    if (this.currentLength === 0) {
+    if (this.length === 0) {
       return undefined;
     }
 
-    const popped = this.arr[--this.currentLength];
+    const popped = this.arr[--this.length];
 
-    this.arr[this.currentLength] = this.fillValue;
+    this.arr[this.length] = this.fillValue;
 
     return popped;
   },
@@ -114,7 +114,7 @@ const fastArrayPrototype = {
     if (this.sparse) {
       let gapLength = 0;
 
-      for (let i = 0; i < this.currentLength; i++) {
+      for (let i = 0; i < this.length; i++) {
         if (this.arr[i] === this.fillValue) {
           gapLength++;
         } else if (gapLength > 0) {
@@ -124,7 +124,7 @@ const fastArrayPrototype = {
         }
       }
 
-      this.currentLength -= gapLength;
+      this.length -= gapLength;
       this.sparse = false;
     }
 
@@ -146,7 +146,7 @@ export const FastArray = ({
   fa.extensionFactor = extensionFactor;
   fa.sparse = false;
   fa.arr = alloc(initialSize, fillValue);
-  fa.currentLength = 0;
+  fa.length = 0;
   fa.maxLength = initialSize;
 
   return fa;
