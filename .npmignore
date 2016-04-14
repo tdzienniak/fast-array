@@ -1,0 +1,12 @@
+dist
+src
+docs
+test
+
+npm-debug.log
+
+.eslintrc
+.babelrc
+
+*.sublime-project
+*.sublime-workspace
