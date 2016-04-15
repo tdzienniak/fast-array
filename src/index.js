@@ -49,6 +49,13 @@ const fastArrayPrototype = {
 
     return unsetValue;
   },
+  find(fn) {
+    for (let i = 0; i < this.length; i++) {
+      if (fn(this.arr[i])) {
+        return this.arr[i];
+      }
+    }
+  },
   findAndRemove(value) {
     const index = this.indexOf(value);
 

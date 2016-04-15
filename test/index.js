@@ -131,3 +131,22 @@ test('indexOf', t => {
 
   t.end();
 });
+
+test('find', t => {
+  const fa = FastArray({
+    initialSize: 10,
+  });
+
+  fa.push(1);
+  fa.push(2);
+  fa.push(3);
+  fa.push(4);
+
+  const found = fa.find(el => el === 2);
+  const notFound = fa.find(el => el === 5);
+
+  t.equal(found, 2, 'should find value');
+  t.equal(notFound, undefined, 'should not find value');
+
+  t.end();
+});
