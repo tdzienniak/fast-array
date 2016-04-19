@@ -20,6 +20,17 @@ const fastArrayPrototype = {
 
     return this;
   },
+  insertAtIndex(index, value) {
+    if (index > this.maxLength - 1) {
+      this.extend(index - this.maxLength + 1);
+    }
+
+    this.arr[index] = value;
+
+    if (index > this.length) {
+      this.length = index + 1;
+    }
+  },
   removeAtIndex(index) {
     if (index < 0 || index >= this.length) {
       throw new Error('index is out of array bounds');

@@ -150,3 +150,18 @@ test('find', t => {
 
   t.end();
 });
+
+test('insertAtIndex', t => {
+  const fa = FastArray({
+    initialSize: 5,
+  });
+
+  fa.insertAtIndex(1, 1);
+  fa.insertAtIndex(10, 10);
+
+  t.equal(fa.arr[1], 1, 'should insert value');
+  t.equal(fa.arr[10], 10, 'should extend and insert value');
+  t.equal(fa.length, 11, 'should set `length` after insertion');
+
+  t.end();
+})
