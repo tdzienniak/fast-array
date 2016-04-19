@@ -55,6 +55,8 @@ const fastArrayPrototype = {
         return this.arr[i];
       }
     }
+
+    return void 0;
   },
   findAndRemove(value) {
     const index = this.indexOf(value);
