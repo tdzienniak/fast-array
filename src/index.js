@@ -171,3 +171,5 @@ export const FastArray = ({
 
   return fa;
 };
+
+export default FastArray;
