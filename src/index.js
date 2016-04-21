@@ -101,6 +101,8 @@ const fastArrayPrototype = {
       this.arr[i] = this.fillValue;
     }
 
+    this.length = 0;
+
     return this;
   },
   push(value) {

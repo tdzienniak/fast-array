@@ -164,4 +164,23 @@ test('insertAtIndex', t => {
   t.equal(fa.length, 11, 'should set `length` after insertion');
 
   t.end();
-})
+});
+
+test('clear', t => {
+  const fa = FastArray({
+    initialSize: 5,
+  });
+
+  fa.push(1);
+  fa.push(2);
+  fa.push(3);
+  fa.push(4);
+
+  fa.clear();
+
+  t.equal(fa.length, 0, 'length after clear should be 0');
+  t.equal(fa.arr[0], 0);
+  t.equal(fa.arr[3], 0);
+
+  t.end();
+});
