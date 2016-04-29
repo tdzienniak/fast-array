@@ -7,6 +7,3 @@ npm-debug.log
 
 .eslintrc
 .babelrc
-
-*.sublime-project
-*.sublime-workspace
