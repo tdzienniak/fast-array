@@ -1,3 +1,6 @@
+const INSERT_AFTER = 1;
+const INSERT_BEFORE = 2;
+
 const alloc = (size, fillValue) => {
   const arr = new Array(size);
 
@@ -9,7 +12,7 @@ const alloc = (size, fillValue) => {
 };
 
 const fastArrayPrototype = {
-  extend(extensionSize) {
+  extend(extensionSize = Math.max(Math.ceil(this.maxLength * this.extensionFactor), 1)) {
     const oldLength = this.maxLength;
 
     this.arr.length = oldLength + extensionSize;
@@ -132,6 +135,32 @@ const fastArrayPrototype = {
 
     return popped;
   },
+  insertAfter(index, value) {
+    this._insertAfterOrBefore(index, value, INSERT_AFTER);
+  },
+  insertBefore(index, value) {
+    this._insertAfterOrBefore(index, value, INSERT_BEFORE);
+  },
+  _insertAfterOrBefore(index, value, insertAfterOrBefore) {
+    if (this.length === this.maxLength) {
+      this.extend();
+    }
+
+    let insertionIndex;
+
+    if (insertAfterOrBefore === INSERT_AFTER) {
+      insertionIndex = index + 1;
+    } else {
+      insertionIndex = index;
+    }
+
+    for (let i = this.length; i > insertionIndex; i--) {
+      this.arr[i] = this.arr[i - 1];
+    }
+
+    this.arr[insertionIndex] = value;
+    this.length++;
+  },
   compact() {
     if (this.sparse) {
       let gapLength = 0;
@@ -158,7 +187,7 @@ export const FastArray = ({
   fillValue = 0,
   initialSize = 1000,
   refillRemoved = true,
-  extensionFactor = 1.5,
+  extensionFactor = 0.5,
 } = {}) => {
   const fa = Object.create(fastArrayPrototype);
 

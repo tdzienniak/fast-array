@@ -166,6 +166,44 @@ test('insertAtIndex', t => {
   t.end();
 });
 
+test('insertAfter', t => {
+  const fa = FastArray({
+    initialSize: 3,
+  });
+
+  fa.push(1);
+  fa.push(3);
+  fa.push(5);
+
+  fa.insertAfter(0, 2);
+  fa.insertAfter(2, 4);
+  fa.insertAfter(4, 6);
+
+  t.deepEqual(fa.arr.slice(0, 6), [1, 2, 3, 4, 5, 6], 'inserted values should be on their places');
+  t.equal(fa.length, 6, 'should set `length` after insertion');
+
+  t.end();
+});
+
+test('insertBefore', t => {
+  const fa = FastArray({
+    initialSize: 3,
+  });
+
+  fa.push(2);
+  fa.push(4);
+  fa.push(6);
+
+  fa.insertBefore(0, 1);
+  fa.insertBefore(2, 3);
+  fa.insertBefore(4, 5);
+
+  t.deepEqual(fa.arr.slice(0, 6), [1, 2, 3, 4, 5, 6], 'inserted values should be on their places');
+  t.equal(fa.length, 6, 'should set `length` after insertion');
+
+  t.end();
+});
+
 test('clear', t => {
   const fa = FastArray({
     initialSize: 5,
