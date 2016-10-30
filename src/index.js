@@ -30,7 +30,7 @@ const fastArrayPrototype = {
 
     this.arr[index] = value;
 
-    if (index > this.length) {
+    if (index >= this.length) {
       this.length = index + 1;
     }
   },
